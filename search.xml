@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[常见设计模式-建造者模式]]></title>
+    <url>%2F2019%2F04%2F26%2F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[建造者模式的定义，将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。一个完整的建造者模式通常包括了用户(发布需求)，指挥者(只会建造者建造)，建造者(执行人)三个角色。 这种模式主要用在，在需求中有一个复杂的对象，这个对象有这样的特征 对象有多个子部分，每部分由不同的算法来实现 这些子部分经常面临着变化 而同时，整个对象将子部分组合在一起的逻辑又基本稳定 接之前的例子，电脑商组装一台电脑，需要将CPU、硬盘、电源等模块组装在一起。电脑商当然不会自己做这个事情，而是雇佣了两名员工(建造者)来做，电脑商只要找一个指挥者指挥他们完成任务即可。 实现之前几个简单的设计模式笔者都是直接贴的代码，从这篇开始我们尝试着，按照逻辑架起这些设计模式 电脑类1234567891011121314151617public class Computer&#123; private List&lt;string&gt; ComputerPart = new List&lt;string&gt;(); public void Build(string part) &#123; ComputerPart.Add(part); &#125; public void Show() &#123; ComputerPart.ForEach(item =&gt; &#123; Console.WriteLine("组装" + item); &#125;); Console.WriteLine("完成组装"); &#125;&#125; 抽象的建造者作为组装电脑的员工，必然要会组装CPU、电源等零部件并交付完整的电脑出来 12345678public abstract class Builder&#123; public abstract void BuildCpu(); //组装CPU public abstract void BuildPower(); //组装电源 // ......组装其它配件 public abstract Computer GetComputer(); //交付电脑&#125; 实现建造者两名组装员工的岗位，一个负责组装台式机，一个负责组装笔记本 1234567891011121314151617181920212223242526272829303132333435//负责组装台式机的员工public class DesktopBuilder : Builder&#123; var MyComputer = new Computer() public override void BuildCpu() &#123; MyComputer.Build("台式机CPU"); &#125; public override void BuildPower() &#123; MyComputer.Build("台式机电源"); &#125; public override Computer GetComputer()&#123; return MyComputer; &#125;&#125;//负责组装笔记本的员工public class LaptopBuilder : Builder&#123; var MyComputer = new Computer() public override void BuildCpu() &#123; MyComputer.Build("笔记本CPU"); &#125; public override void BuildPower() &#123; MyComputer.Build("笔记本电源"); &#125; public override Computer GetComputer()&#123; return MyComputer; &#125;&#125; 创建指挥者建造者找好了并培训了技能，接下来就需要指挥者来监督指挥工作了 12345678public class Leader&#123; public void ToWork(Builder builder) &#123; builder.BuildCpu(); builder.BuildPower(); &#125;&#125; 用户调用指挥者和建造者都有了，电脑商就可以运作起来了 123456789101112131415public class Customer&#123; public static Main() &#123; var leader = new Leader(); //委任指挥者 var desktopBuilder = new DesktopBuilder(); //委任台式机组装人员 var taplopBuilder = new TaplopBuilder(); //委任笔记本组装人员 leader.ToWork(desktopBuilder); //指挥者让台式机组装人员工作 desktopBuilder.GetComputer().Show(); //台式机组装人员交付台式机 leader.ToWork(taplopBuilder); //指挥者让笔记本组装人员工作 taplpgBuilder.GetComputer().Show(); //笔记本组装人员交付笔记本 &#125;&#125; 电脑商出台了一款新的组装电脑-台式机PRO不难看出，只需要招聘一个台式机PRO的组装人员就可以了，因为装机顺序是不会变的，变的只有零部件的配置。 这就是建造者模式了。建造者只负责学会各种技能，而指挥者负责指挥建造者按照技能顺序，完成产品生产。]]></content>
+      <categories>
+        <category>dotnet</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>dotnet</tag>
+        <tag>架构</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[常见设计模式(四)-抽象工厂]]></title>
+    <url>%2F2019%2F04%2F25%2F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%2F</url>
+    <content type="text"><![CDATA[抽象工厂，其实就是将简单工厂的工厂类变成抽象类，并且在子类中完成各自的产品实现。 抽象工厂和工厂方法模式的区别，就在于，工厂方法只实现了一种产品的生产，而抽象工厂面向的是一个产品簇，实现了多中产品的生产。 所以，请忘记工厂方法！抽象工厂就是工厂方法，工厂方法其实只是实现了单一产品的抽象工厂 下面笔者会直接根据之前的例子，展示抽象工厂的代码 实现之前的例子，增加了需求，每个电脑商要生产不同类型的电脑，包括台式机、平板电脑、笔记本电脑。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596//公司作为用户方public class Company&#123; public static Main() &#123; var dell = new BuyDell(); var mac = new BuyMac(); dell.BuyDesktop().Buy(); dell.BuyLaptop().Buy(); mac.BuyDesktop().Buy(); mac.BuyLaptop().Buy(); &#125;&#125;//以下是服务商部分************************************//服务商的抽象类,以产品为抽象public abstract class AbstractFactory&#123; public abstract Desktop BuyDesktop(); public abstract Laptop BuyLaptop&#125;//服务商实现购买dell品牌的电脑public class BuyDell : AbstractFactory&#123; //买台式机 public override Desktop BuyDesktop() &#123; return new DellDesktop(); &#125; //买笔记本 public override Laptop BuyLaptop() &#123; return new DellLaptop(); &#125;&#125;//服务商实现购买苹果电脑public class BuyMac : AbstractFactory&#123; public override Desktop BuyDesktop() &#123; return new DellDesktop(); &#125; public override Laptop BuyLaptop() &#123; return new DellLaptop(); &#125;&#125;//以下是电脑商部分************************************//产品抽象类public abstract class Desktop&#123; public abstract void Buy();&#125;public abstract class Laptop&#123; public abstract void Buy();&#125;//戴尔电脑public class DellDesktop : Desktop //台式机装机流程&#123; public override Buy() &#123; Console.WriteLine("一台DELL台式电脑"); &#125;&#125;public class DellLaptop : Laptop //笔记本装机流程&#123; public override Buy() &#123; Console.WriteLine("一台DELL笔记本电脑"); &#125;&#125;//苹果电脑public class MacDesktop : Computer&#123; public override Buy() &#123; Console.WriteLine("一台MAC台式电脑"); &#125;&#125;public class MacDesktop : Computer&#123; public override Buy() &#123; Console.WriteLine("一台Mac Book"); &#125;&#125; 总结以简单工厂开始入门，工厂方法打好了抽象的基础，形成了一种彻底的工厂类模式抽象工厂模式。 在抽象工厂模式下，增加一个电脑商，只需要添加对应的实体类即可，尽可能的达到了解耦和封装变化的目的。]]></content>
+      <categories>
+        <category>dotnet</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>dotnet</tag>
+        <tag>架构</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[常见设计模式(三)-工厂方法]]></title>
+    <url>%2F2019%2F04%2F25%2F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%2F</url>
+    <content type="text"><![CDATA[上一篇博客已经举例说明了简单工厂模式，细心的读者应该可以看到，它有一些明显的缺陷： 随着添加的电脑商越来越多，工厂类中会不断的添加 else if 或者 case 来确保生成对应的实体类； 随之而来的，我们可能需要一个实体类或结构体等来为用户创建一个菜单，以引导他们能顺利的得到实体类(字符串参数必须完全正确)； 当电脑商不断增加的时候，我们也必须要不停的对工厂类进行改动，他们之间仍然有很紧的耦合 为什么有工厂方法模式我们要想一个办法，不需要再改动工厂类逻辑的情况下添加新的电脑商，而服务商也不需要做那么些的判断来帮助用户购买电脑。工厂方法模式就出现了。 ##具体实现 我们把工厂类中对应的每个电脑商的部分，封装出来变成子类，这样用户可以直接调用对应的子类来完成电脑的采购。这就是工厂方法。我们把之前简单工厂的例子改动一下 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566//公司作为用户方12public class Company&#123; public static Main() &#123; var dell = new BuyDell(); var mac = new BuyMac(); dell.BuyComputer().Buy(); mac.BuyComputer().Buy(); &#125;&#125;//以下是服务商部分************************************//服务商的抽象类public abstract class FactoryCreator&#123; public abstract Computer BuyComputer();&#125;//服务商实现购买dell电脑public Computer BuyDell : FactoryCreator&#123; public override Computer BuyComputer() &#123; //坐公交车去买电脑 return new Dell(); &#125;&#125;//服务商实现购买苹果电脑public Computer BuyMac : FactoryCreator&#123; public override Computer BuyComputer() &#123; //打开官网订购 return new Mac(); &#125;&#125;//以下是电脑商部分************************************//电脑抽象类public abstract class Computer&#123; public abstract void Buy();&#125;//戴尔电脑public class Dell : Computer&#123; public override Buy() &#123; //这里是一台dell电脑的攒机工作流。。。 Console.WriteLine("一台DELL电脑"); &#125;&#125;//苹果电脑public class Mac : Computer&#123; public override Buy() &#123; //这里是一台苹果电脑的生产过程 Console.WriteLine("一台苹果电脑"); &#125;&#125;]]></content>
+      <categories>
+        <category>dotnet</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>dotnet</tag>
+        <tag>架构</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[常见设计模式(二)-简单工厂]]></title>
+    <url>%2F2019%2F04%2F24%2F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F(%E4%BA%8C)-%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%2F</url>
+    <content type="text"><![CDATA[简单工厂是一种可以根据不同参数产生不同实例的处理方式，感觉本质来说不能算是设计模式，而应该是一种编程习惯。 工厂就是帮助我们处理流程的地方，比如组装汽车、制造磨具、包装等。 从编程的角度，就涉及到一个面向对象的重要思想封装变化，一方面用户没有必要了解变化的内部，只需要告诉工厂他需要什么；另一方面，封装变化是最简单的解耦方式，业务逻辑的改变不会需要调用方去改变。 我们这里举个 公司给员工置办电脑的例子来说明。 当我们需要组装电脑时，我们需要购买CPU、内存条、硬盘等一系列的东西，然后把它们组装起来装上系统，对于用户来说，这是一件很麻烦的事情。 这时我们有了品牌电脑商，他们可以直接按照我们的需求给我们一台完整的电脑，他们帮我们封装了变化，以后我们就可以买什么牌子的电脑就去找对应的电脑商。但是我们仍然需要按照我们的列表跑一家一家的电脑商来购置对应的电脑。 这时，我们有了服务商，我们只要把需求告诉他们，他们会帮我们去对应的地方购置并交付给我们，那么我们享有一台什么样的电脑，不需要关注这个过程，我们得到了有一台对应的电脑的结果。这就是简单工厂。 没有工厂公司给员工置办电脑，首先需要罗列自己的需求，然后按需求去对应的商家购买。这段代码实现了封装变化。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051//公司作为用户方public class Company&#123; public static Main() &#123; BuyComputer("DELL"); BuyComputer("Mac"); &#125; //公司的采购行为 public private Computer BuyComputer(string type) &#123; Computer computer = null; if(type == "DELL") &#123; computer = new Dell(); //如果买Dell电脑，去找Dell商家 &#125; else if(type == "Mac") &#123; computer = new Mac(); //如果买Mac电脑，去找Mac商家 &#125; return computer; &#125;&#125;//电脑抽象类public abstract class Computer&#123; public abstract void Buy();&#125;//戴尔电脑public class Dell : Computer&#123; public override Buy() &#123; //这里是一台dell电脑的攒机工作流。。。 Console.WriteLine("一台DELL电脑"); &#125;&#125;//苹果电脑public class Mac : Computer&#123; public override Buy() &#123; //这里是一台苹果电脑的生产过程 Console.WriteLine("一台苹果电脑"); &#125;&#125; 以上代码，实现了封装变化，将电脑组装的行为，交给了商家，公司不需要考虑该如去组装一台电脑，而整个组装流程及优化都交给了电脑商。 加入工厂类公司突然发现，他不止可以把组装的流程交给电脑商，还有服务商可以直接帮他们采购电脑，他们甚至可以不去管采购的流程。服务商加入了进来，它被称为工厂类 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657//公司作为用户方public class Company&#123; public static Main() &#123; ComputerFactory.BuyComputer("DELL"); ComputerFactory.BuyComputer("Mac"); &#125;&#125;//服务商，帮助公司采购电脑public class ComputerFactory&#123; //公司的采购行为全权交给了服务商处理 public static Computer BuyComputer(string type) &#123; Computer computer = null; if(type == "DELL") &#123; computer = new Dell(); //如果买Dell电脑，服务商去找Dell商家 &#125; else if(type == "Mac") &#123; computer = new Mac(); //如果买Mac电脑，服务商去找Mac商家 &#125; //把电脑拿给公司 return computer; &#125;&#125;//电脑抽象类public abstract class Computer&#123; public abstract void Buy();&#125;//戴尔电脑public class Dell : Computer&#123; public override Buy() &#123; //这里是一台dell电脑的攒机工作流。。。 Console.WriteLine("一台DELL电脑"); &#125;&#125;//苹果电脑public class Mac : Computer&#123; public override Buy() &#123; //这里是一台苹果电脑的生产过程 Console.WriteLine("一台苹果电脑"); &#125;&#125; 总结观察上面两段代码，第一段将电脑组装流程交给了电脑商，公司再也不需要关注电脑是如何攒配的了，及时随着技术的进步电脑的硬件发生了改变等，也不会影响到公司的需求 购买指定的电脑，公司也不需要再次去学习如何组装电脑。实现了封装变化，并进行了解耦； 第二段代码，公司将去电脑商采购电脑这部分业务交给了服务商，公司也不需要关注该去哪里采购电脑，电脑商的采购流程是否有变化了。最后，公司只要想买电脑，联系服务商就获取了电脑。进一步的封装变化与解耦。 为什么说，简单工厂其实是一种面向对象的编程习惯。 我们编程过程就是一个极尽去封装变化和解耦的过程，可以看出，即使不实用简单工厂模式，我们上面的代码依然封装了变化，但是却有参与变化留给了用户。而加入了简单工程，我们基本完成了与用户的的彻底解耦，其实这个主要来源于日常变成过程中的惯性思维。 电脑商封装了攒机过程的变化，使服务商与攒机过程解耦； 服务商封装了电脑采购的变化，形成了工厂模式，使作为用户的公司与整个电脑购买流程解耦； 而实现这个工厂模式的，其实就是一个工厂类，一个可以根据入参不同产生不同实例的方法；]]></content>
+      <categories>
+        <category>dotnet</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>dotnet</tag>
+        <tag>架构</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[常见设计模式(一)-单例模式]]></title>
+    <url>%2F2019%2F04%2F24%2F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F(%E4%B8%80)-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[单例就是一个类仅存在一个实例对象，那么单例模式顾名思义就是实现一个类仅存在一个实例对象这一功能的解决方案。单例模式是设计模式中比较简单而又非常常用的，理解其目的能轻松地把握使用它的时机。 ##什么时候使用单例模式 单例模式可以解决多种问题，具体使用时机还是要看自己把握。单例模式能够解决的无非就是这么几个问题 控制实例的产生数量，达到节约资源提高性能的目的 通常情况下数据库上下文实例，我们会使用单例模式，在生产过程中，我们必然会不停的对数据产生访问，在频繁的访问过程中，不可避免的会造成多个数据库连接的保持，而使用单例不止可以很好地控制连接数，更可以极大的减少打开或关闭数据库连接所产生的损耗 作为通信中间件，因为它是单一实例的，所以可以通过它实现不同线程之间的数据交互操作 控制资源的使用，可以很好地控制并发访问 单例模式怎么写 在生产过程中，我们使用对象，通常是 new 一个新的实例。 要实现单例模式，首先就不能允许直接使用 new 来获取实例，不然那没办法达到类只有一个实例的目的，而实例化一个对象本质是调用类的构造函数，只要我们私有化构造函数，那么用户就无法使用 new 来获取新的实例，之后只要我们提供一个入口，让用户获取到唯一的实例那就解决了！ 简单单例模式1234567891011121314151617181920public class ClassName&#123; //一个静态变量来储存实例 private static ClassName myInstance; //私有化构造函数，达到不能new的目的 private ClassName()&#123;&#125; //获取唯一实例的入口 public static ClassName GetInit() &#123; //如果实例不存在，则建立实例，存在则直接返回实例，实现实例的唯一 if(myInstance == null) &#123; myInstance = new ClassName(); &#125; return myInstance; &#125;&#125; 增加多线程限定上面的代码已经实现了实例的唯一，但是却有不足之处。在多线程的情况下，极有可能同时运行到GetInit，而根据判断条件，导致类被多次实例化的情况，所以我们需要添加 线程锁 来避免这一情况的发生。那么代码就修改成如下 1234567891011121314151617181920212223242526272829public class ClassName&#123; //一个静态变量来储存实例 private static ClassName myInstance; //定义一个线程锁 private static readonly object locker = new object(); //私有化构造函数，达到不能new的目的 private ClassName()&#123;&#125; //获取唯一实例的入口 public static ClassName GetInit() &#123; //如果实例不存在，则建立实例，存在则直接返回实例，实现实例的唯一 if(myInstance == null) &#123; //将锁放在这里，如果放在上层判断之前，会造成阻塞影响性能 //有些明明可以直接返回实例的情况，还要等线程锁相应。 lock(locker)&#123; if(myInstance == null) &#123; myInstance = new ClassName(); &#125; &#125; &#125; return myInstance; &#125;&#125; 这样，我们就实现了单例模式，在实际开发过程中就可以尽情的使用了。 他的扩展基本上在于如何去写这个入口函数，比如构造数据库资源池，产生多个数据库连接实例却又能很好地控制并发数量减轻服务器压力等。]]></content>
+      <categories>
+        <category>dotnet</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>dotnet</tag>
+        <tag>架构</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[MacOs常用软件推荐]]></title>
+    <url>%2F2019%2F04%2F19%2FMacOs%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%2F</url>
+    <content type="text"><![CDATA[记录这段时间使用MacOs过程中用到的比较好用的软件，极大提高工作效率 ShadowsocksX-NG 好用的翻墙工具，查阅资料下载包文件必备 KeyCue 快捷键提示，显示MAC的所有快捷键及当前应用的快捷键 visual studio code 轻量级代码编辑器，超强的第三方插件功能 Balsamiq Mockups3 手绘风交互原型设计工具 有道云笔记 常用文档编写、记录工具 Microsoft Remote Desktop 微软专门为MAC制作的远程桌面连接工具 Alfred3 远超聚焦搜索的搜索工具，还可以做工作流 1Password7 记住你的所有密码，三端通用，方便省事 Tower 最好用的GIT客户端 MindNode 快捷的思维导图工具 奇妙清单 好用的时间管理工具 Noizio 白噪音模拟，模仿风声水声咖啡馆的声音等，帮助你很快的静下心来 Bartender3 状态栏图标隐藏分类工具 CleanMyMac X MAC垃圾清理内存管理大师 Navicat Premium 数据库连接操作工具 Visual Studio for Mac 2019 最新的.net IDE Dr.Unarchiver 压缩解压工具 Transmit 好用的ftp工具 MindMaster 流程图工具 Pikka 牛逼的屏幕取色工具 Typora 可视化markdown编辑器]]></content>
+      <categories>
+        <category>MacOs使用</category>
+      </categories>
+      <tags>
+        <tag>MacOs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Docker入门学习]]></title>
+    <url>%2F2019%2F04%2F16%2FDocker%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%2F</url>
+    <content type="text"><![CDATA[Docker是一个轻量级、快速、隔离的容器，提供了镜像的概念，使用者可以从镜像创建容器，镜像包含了运行整个程序的必须环境和程序包本身，可以达到线上和开发环境上的彻底统一。它可以理解成已经安装好必要环境的虚拟机，但是启动速度和资源占用远远要优于虚拟机。 入门参考阅读 Docker中文官网) Docker中文社区 Docker中文文档) 概念 Docker 是一个开源项目，诞生于 2013 年初，最初是 dotCloud 公司内部的一个业余项目。它基于 Google 公司推出的 Go 语言实现。 项目后来加入了 Linux 基金会，遵从了 Apache 2.0 协议，项目代码在 GitHub 上进行维护。 自开源后受到广泛的关注和讨论，以至于 dotCloud 公司后来都改名为 Docker Inc。Redhat 已经在其 RHEL6.5 中集中支持 Docker；Google 也在其 PaaS 产品中广泛应用。项目的目标是实现轻量级的操作系统虚拟化解决方案。 Docker 的基础是 Linux 容器（LXC）等技术。在 LXC 的基础上 Docker 进行了进一步的封装，让用户不需要去关心容器的管理，使得操作更为简便。用户操作 Docker 的容器就像操作一个快速轻量级的虚拟机一样简单。 镜像镜像是只读的，所有的容器都是基于镜像创建的，基于镜像也可以创建新的镜像。可以简单的理解镜像类似为Windows系统的镜像。一个镜像可以包含产品所需的完整环境，开发人员、测试人员、运维人员使用同一个镜像生成容器，可以保证开发、运维和产品环境的彻底统一，解决多次测试、环境不一致导致开发问题等。 容器容器是基于镜像启动的轻量级的一个部署。容器的启动方式有两种，一种是基于镜像启动，一种是启动已经停止的容器，因为容器实在是太轻量级了，很多开发者都是随时创建和删除容器。 数据卷数据卷是容器之间共享的存储空间，只要有容器仍在使用它就一直存在。 数据卷可以创建也可以直接挂载宿主机器上的文件夹或文件，数据卷上的内容可以直接修改并作用于容器。 安装 笔者使用 MacOs环境，这里只介绍当前环境下的安装方式，其他方式请参考官网文档 Homebrew 是os环境的包管理神器~，我们可以直接通过它完成Docker的安装 1brew cask install docker 系统可能会提示你输入mac密码已完成整个安装过程，安装结束后状态栏会有一个小鲸鱼图标，然后打开 终端 ，输入以下代码段即可发现安装成功 1docker --version 常用命令 笔者在本篇博客中仅对docker做一个简单的介绍，下一篇博客中会以.netCore webapi为例子介绍它的使用过程。 以下是docker的一些常用命令，终端输入 docker --help 即可查看docker的全部命令。 镜像操作12345678910111213docker login # 登录到一个registrydocker search # 从registry仓库搜索镜像docker pull # 从仓库下载镜像到本地docker push # 将一个镜像push到registry仓库中docker images # 显示本地所有的镜像列表docker import # 从一个tar包创建一个镜像，往往和export结合使用docker build # 使用Dockerfile创建镜像（推荐）docker commit # 从容器创建镜像docker rmi # 删除一个镜像docker load # 从一个tar包创建一个镜像，和save配合使用docker save # 将一个镜像保存为一个tar包，带layers和tag信息docker history # 显示生成一个镜像的历史命令docker tag # 为镜像起一个别名 容器操作123456789101112131415161718docker create # 创建一个容器但是不启动它docker run # 创建并启动一个容器docker stop # 停止容器运行，发送信号SIGTERMdocker start # 启动一个停止状态的容器docker restart # 重启一个容器docker rm # 删除一个容器docker kill # 发送信号给容器，默认SIGKILLdocker attach # 连接(进入)到一个正在运行的容器docker wait # 阻塞到一个容器，直到容器停止运行docker ps # 显示状态为运行（Up）的容器docker ps -a # 显示所有容器,包括运行中（Up）的和退出的(Exited)docker inspect # 深入容器内部获取容器所有信息docker logs # 查看容器的日志(stdout/stderr)docker events # 得到docker服务器的实时的事件docker port # 显示容器的端口映射docker top # 显示容器的进程信息docker diff # 显示容器文件系统的前后变化docker export # 将容器整个文件系统导出为一个tar包，不带layers、tag等信息 几个常用复杂命令123456789docker rm `docker ps -a -q` # 删除已经停止的容器docker rmi $(docker images -q) # 删除所有镜像docker kill $(docker ps -q) # 杀掉所有正在运行的容器进程# 移除所有none镜像(镜像rebuild之后会产生名字为none的废弃镜像，占用空间)-----------docker ps -a | grep "Exited" | awk '&#123;print $1 &#125;'|xargs docker stop docker ps -a | grep "Exited" | awk '&#123;print $1 &#125;'|xargs docker rm docker images|grep none|awk '&#123;print $3 &#125;'|xargs docker rmi # ----------------------------------------------------------------------- DockerfileDockerfile是docker构建镜像的基础，可以理解为一个批处理程序，在构建镜像时使用，按照指定逻辑脚本为你自动构建镜像，学习编写Dockerfile是必备的，也可以帮助你理解docker 在要创建为镜像的宿主文件夹下创建无后缀名的文件 Dockerfile ，打开添加dockerfile脚本即可。 FROM指定基础镜像，基于何镜像创建此镜像，必须位于文件的第一条语句 12FROM &lt;image&gt; : &lt;tag&gt; # image为镜像名，不指定tag则默认为latestFROM scratch # 这里是基于任何镜像的写法 RUN容器构建时执行指定的shell命令 12RUN &lt;command&gt; # 直接接shell命令RUN ["executable", "param1", "param2"] 注：对于多行命令，不建议使用多个RUN，最好卸载一个RUN中，多个RUN会产生多层镜像会增加构建时间 CMD容器启动时执行指定的shell命令 12CMD &lt;command&gt; # 直接接shell命令CMD ["executable","param1","param2"] EXPOSE暴露容器监听的接口 1EXPOSE 9100 # 监听9100接口 容器启动时使用 -p 映射容器接口道宿主机器，即可通过IP访问 1-p 9100:9100 COPY把宿主机文件复制到镜像中 1COPY &lt;源文件路径&gt; &lt;镜像中文件路径&gt; ENTRYPOINT容器启动时默认的执行命令，和CMD只会执行其中最后的一条，其他的会被覆盖 1ENTRYPOINT ["dotnet","run"]]]></content>
+      <categories>
+        <category>服务器</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hexo新建文章自动打开编辑器]]></title>
+    <url>%2F2019%2F04%2F16%2FHexo%E6%96%B0%E5%BB%BA%E6%96%87%E7%AB%A0%E8%87%AA%E5%8A%A8%E6%89%93%E5%BC%80%E7%BC%96%E8%BE%91%E5%99%A8%2F</url>
+    <content type="text"><![CDATA[使用Hexo写新文章的时候比较麻烦，首先要使用 hexo new 文章名 来新建md文章，然后去_ports文件夹中找到新建的文章，再使用MD编辑器打开。如果你的文章又有很多那就更不方便了。 Hexo作者提供了一个解决方案，可以在新建文章时自动使用指定编辑器打开。 在你的Hexo文件夹下找到 scripts 文件夹，如果没有就新建一个 在 /scripts 下新建一个js文件，名字可以随意命名 js文件中添加以下代码段(Mac) 123//使用Typora打开新创建的MD文件var exec = require('child_process').exec;hexo.on('new', function(data)&#123; exec('open -a "/Applications/Typora.app" ' + data.path); &#125;); /Applications/Typora.app 这里是你使用的MD编辑器的绝对路径，笔者使用的是Typora编辑器 之后只要再次使用命令新建文章，及会同时使用指定的编辑器打开你新建的文章 注：提供Windows上的代码段以供参考 1234var spawn = require('child_process').exec;hexo.on('new', function(data)&#123; spawn('start "D:\WorkPlace\MarkdownPad\MarkdownPad2.exe" ' + data.path);&#125;);]]></content>
+      <categories>
+        <category>个人博客搭建</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[使用Hexo+NexT搭建个人博客]]></title>
+    <url>%2F2019%2F04%2F11%2F%E4%BD%BF%E7%94%A8Hexo-NexT%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%2F</url>
+    <content type="text"><![CDATA[Hexo是一个快速、简洁且高效的博客框架，使用 Markdown 渲染文章，并可快速的通过主题生成静态网页； NexT是一个基于 Hexo 的简洁风主题，配置简单，笔者比较喜欢这种可以清晰呈现自己的博文，又没有过于花哨的渲染的主题； 这篇文章主要记录了我学习使用 Hexo 搭建个人博客的过程，对过程中遇到的问题及关键点做一个归纳。博主的环境为 MacOs ，其他环境仅供参考。 博客构建###安装Hexo脚手架 安装过程非常简单，首先使用 brew 安装必要环境，即可使用 npm 安装Hexo的脚手架。 环境准备Hexo的安装需要 Node.js、Git 环境 Node.js安装： 1brew install git Git安装： 1brew install node 脚手架安装必备的环境安装完成之后就可以用 npm 来完成脚手架的安装了 1npm install -g hexo-cli 项目搭建使用脚手架搭建Hexo项目，会生成一个完整的Hexo项目，首先创建一个项目文件夹，这里使用文件夹 Blog，然后在文件夹中打开终端，执行以下命令： 12hexo initnpm install 更多hexo命令，请参考官方文档-命令部分 推荐安装以下插件，包含了自动部署到github等常用操作 12345678910111213npm install hexo-generator-index --savenpm install hexo-generator-archive --savenpm install hexo-generator-category --savenpm install hexo-generator-tag --savenpm install hexo-server --savenpm install hexo-deployer-git --savenpm install hexo-deployer-heroku --savenpm install hexo-deployer-rsync --savenpm install hexo-deployer-openshift --savenpm install hexo-renderer-marked@0.2 --savenpm install hexo-renderer-stylus@0.2 --savenpm install hexo-generator-feed@1 --savenpm install hexo-generator-sitemap@1 --save 待命令执行完成，得到hexo的项目文件，文件夹中介绍几个重要文件 _config.yml网站的配置信息，可以在此处配置网站的大部分参数，请参考官方文档-配置部分 scaffolds存放模板文件，hoxe会根据模板新建不同类型的Markdown文件 source_posts中存放了你的所有Markdown格式的文章，hoxe会在编译时解析为静态网页 themes存放了主题文件，可以通过 git 命令来下载主题 下载NexT主题在 Blog 文件夹下终端执行： 1git clone https://github.com/iissnan/hexo-theme-next themes/next 执行完成后修改配置文件 _config.yml 中的对应配置,以启用主题 1theme: next NexT主题配置主题配置请参考文档给出了详尽的基础配置、高级配置、第三方插件使用的相关说明，傻瓜式的使用方式~，这里就不多做赘述。其中包括了为博客新增各种功能的页面，如类别展示页和标签展示页，只需要一条命令即可搞定。 查看自己的博客网站执行下面的命令，就可以生成自己的博客网站，并通过本地4000端口预览它。 1hexo server 写博文 跟着上面的步骤做完，并详细的查看了给出的相关官方文档，相信你已经配置出了一个心仪的博客主题，下面就是要写自己的博客的时候了 新建博文新建博文命令会自动根据 scaffolds里面的模板格式创建新的.md文章至source/_posts中 1hexo new [layout] "postName" 其中，layout是模板名称，不填写则默认为posts模板，下面贴出我设置的post模板内容 123456---title: &#123;&#123; title &#125;&#125;date: &#123;&#123; date &#125;&#125;tags:categories: --- 自动创建好的文章，会带有以上的头部配置，其中title为标题，date是已设置好的对应格式的当前日期，tags存放标签，categories存放类别。下面是我这篇文章的头部配置 12345678910---title: 使用Hexo+NexT搭建个人博客date: 2019-04-11 15:04:39tags: - Hexo- NexTcategories:- 技术- 个人博客搭建--- 其中标签可以多个，是同级关系；而类别只能有一个，写多个类别会使这几个类别处于子集关系，如上一篇文章就是属于技术类中的个人博客搭建类别的,标签及类别都不需要特殊配置，在此处设置后，会自动生成对应标签和类别。 更多用法请参看Hexo官方文档-写作 运行1hexo server 就是可以看到你新写的文章已经出现了，并且上面配置的类别及标签也自动增加了。 生成静态网站使用下面的命令即可为你生成静态网站到/publish文件夹中，你可以拿来部署到任何一个服务器。 1hexo generate 到此为止，我们的个人博客搭建之旅基本已经完成了，剩下的就是美化和丰富它了，下面我会说到使用github搭建部署免费的个人博客网站 ​ GitHub Pages与Hexogithub pages是github提供的，它可以免费帮你创建一个不限流量的网站。它给你提供了一个免费的域名，如何使用github pages，度娘上一搜一大把，这里就不仔细讲了。我们只说创建好github pages之后如何把hexo博客更快的同步上去。 配置文件修改首先要修改 _config.yml配置文件，添加或修改如下内容 1234deploy: type: git repository: (这里放git地址) branch: master 然后只要执行以下操作，就可以直接生成静态网站并发布到github上 1hexo deploy 以上操作默认提交已产生的静态页面，如果你需要重新构建静态页面再提交 1hexo generate -d 首次执行会需要你输入github的账号密码以获取提交权限。 相关阅读 NexT主题下使用Leancloud统计文章阅读量 NexT主题常见问题解答 添加字数统计和阅读时长]]></content>
+      <categories>
+        <category>个人博客搭建</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Markdown语法总结]]></title>
+    <url>%2F2019%2F04%2F11%2FMarkdown%E8%AF%AD%E6%B3%95%E6%80%BB%E7%BB%93%2F</url>
+    <content type="text"><![CDATA[最近对Markdown产生了兴许，将整个学习过程进行了整理。此部分为Markdown的基础用法，这东西用着有点舒服，它的语法一篇文章足可以说完，老少皆宜的文字编辑方式！！ 目录目录在文章任何部位使用一下代码段，即可根据标题等级生成目录。 1[TOC] 标题Markdown使用 # 来设置标题。 123456# h1## h2### h3#### h4##### h5###### h6 区块段落 区块段落可以用来高亮显示置顶段落文字 123&gt; 这是一个区块段落&gt; &gt; 这样可以换到下一段 这是一个区块段落 这样可以换到下一段 图文链接 文字链接 1[点击跳转至百度](http://www.baidu.com) 点击跳转至百度 嵌入线上图片 1![这里是图片说明](https://uploadimages.jianshu.io/upload_images/703764-605e3cc2ecb664f6.jpg？imageMogr2/autoorient/strip%7CimageView2/2/w/1240) 另外，针对插入的本地图片可以控制图片大小，在拖拽、拷贝或者点击插入本地图片之后，直接在图片名称后面（无需空格）添加以下语法均可以按照以下要求控制图片大小 @w=300 @h=150 @w=200h=100 列表Markdown列表分为无序列表及有序列表 无序列表 123* 1* 2* 3 1 2 3 有序列表 1231. A2. B3. C A B C 段落缩进（一个tab）12345* 段落1 &gt; 区块1* 段落2 &gt; 区块2 段落1 区块1 段落2 区块2 分隔线1*** 字形标记12345*斜体*~~划线~~**粗体** 斜体 划线 粗体 表格第二行代码中，:---: 表示居中，---: 表示居右，:--- 表示居左 1234条目1|条目2|条目3:---:|:---|---:内容1|内容2|内容3居中的内容|居左的内容|居右的内容 条目1 条目2 条目3 内容1 内容2 内容3 居中的内容 居左的内容 居右的内容 代码段代码段使用 反引号 标记，嵌入行内的代码段使用单个反引号标记，整段的代码段使用三个反引号标记。 注1： 反引号即键盘上的 ~ 号注2： 代码高亮取决于对应Markdown编辑器的支持 12345var a=11;if(a == 11)&#123; return true;&#125; 选中12* [ ] 未选中* [x] 已选中 [ ] 未选中 [x] 已选中]]></content>
+      <categories>
+        <category>个人博客搭建</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+</search>
